@@ -3,3 +3,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/butex
     username: postgres
     password: root
+
+#Uncomment fragment below if u want tables to be created
+#  jpa:
+#    hibernate:
+#      ddl-auto: create-drop
