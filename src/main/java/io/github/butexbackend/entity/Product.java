@@ -2,8 +2,15 @@ package io.github.butexbackend.entity;
 
 import io.github.butexbackend.model.ProductColor;
 import io.github.butexbackend.model.ProductType;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +20,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Data
 public class Product {
 
@@ -26,6 +34,9 @@ public class Product {
 
     @ElementCollection
     private List<Double> sizes;
+
+    @Enumerated
+    @ElementCollection(targetClass = ProductColor.class)
     private List<ProductColor> colors;
     private String fabric;
 }
