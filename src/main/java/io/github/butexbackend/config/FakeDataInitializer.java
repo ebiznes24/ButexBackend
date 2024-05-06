@@ -77,8 +77,14 @@ public class FakeDataInitializer {
     private List<Double> getRandomSizes() {
         List<Double> sizes = new ArrayList<>();
 
-        for (int i = 0; i < new Random().nextInt(10); i++) {
-            sizes.add((double) new Random().nextInt(37, 48));
+        for (int i = 0; i < new Random().nextInt(8); i++) {
+            double size = new Random().nextInt(37, 48);
+
+            while (sizes.contains(size)) {
+                size = new Random().nextInt(37, 48) + (double) new Random().nextInt(2) / 2;
+            }
+
+            sizes.add(size);
         }
 
         return sizes;
@@ -90,7 +96,13 @@ public class FakeDataInitializer {
         Random random = new Random();
         ProductColor[] values = ProductColor.values();
         for (int i = 0; i <= new Random().nextInt(5); i++) {
-            colors.add(values[random.nextInt(values.length)]);
+
+            ProductColor color = values[random.nextInt(values.length)];
+            while (colors.contains(color)) {
+                color = values[random.nextInt(values.length)];
+            }
+
+            colors.add(color);
         }
 
         return colors;
