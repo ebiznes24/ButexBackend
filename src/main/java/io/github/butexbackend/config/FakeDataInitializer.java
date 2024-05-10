@@ -1,5 +1,6 @@
 package io.github.butexbackend.config;
 
+import io.github.butexbackend.client.FurgonetkaClient;
 import io.github.butexbackend.entity.Product;
 import io.github.butexbackend.model.ProductColor;
 import io.github.butexbackend.model.ProductType;
@@ -36,9 +37,12 @@ public class FakeDataInitializer {
             "Eco-skóra");
 
     private final ProductRepository productRepository;
+    private final FurgonetkaClient furgonetkaClient;
 
     @Bean
     void initializeFakeData() {
+        furgonetkaClient.validateOrderPackage(null);
+
         List<Product> products = new ArrayList<>();
 
         for (int i = 0; i < 50; i++) {

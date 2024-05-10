@@ -7,6 +7,13 @@ spring:
     hibernate:
       ddl-auto: create-drop
 
+furgonetka:
+  environment-url: https://api.sandbox.furgonetka.pl
+  api-token: YnV0ZXgtM2M2NmRhYzdkYzEzNDQ2ZWUwNGU0MGJiZTgyYTA4Y2E6NmFlNWRkYWJiMGE3YWZlYTE2ODk2YzI5NGFkNzExZjMzMzY0ZGM0ZTQ0YWUyNzE4NjkyNzFkNWNmY2MyYjZhNQ==
+  endpoint:
+    package-validate: /packages/validate
+    package-create: /packages
+
 #Uncomment fragment below if u want tables to be created
 #  jpa:
 #    hibernate:
