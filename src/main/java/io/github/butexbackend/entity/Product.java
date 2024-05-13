@@ -2,7 +2,6 @@ package io.github.butexbackend.entity;
 
 import io.github.butexbackend.model.ProductColor;
 import io.github.butexbackend.model.ProductType;
-import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;

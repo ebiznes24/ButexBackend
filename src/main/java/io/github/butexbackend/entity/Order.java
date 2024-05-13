@@ -1,5 +1,6 @@
 package io.github.butexbackend.entity;
 
+import io.github.butexbackend.model.FurgonetkaService;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,8 +22,6 @@ import java.util.List;
 @Table(name = "orders")
 public class Order {
 
-    //LOD140
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,4 +35,5 @@ public class Order {
     private String city;
     private String email;
     private String phoneNumber;
+    private FurgonetkaService service;
 }

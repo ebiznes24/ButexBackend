@@ -1,8 +1,9 @@
 package io.github.butexbackend.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.butexbackend.dto.OrderDTO;
+import io.github.butexbackend.dto.furgonetka.FurgonetkaPackageRequestDTO;
 import io.github.butexbackend.dto.furgonetka.FurgonetkaTokenResponseDTO;
+import io.github.butexbackend.exception.FurgonetkaException;
 import io.micrometer.common.util.StringUtils;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -29,10 +30,17 @@ public class FurgonetkaClient {
     @Value("${furgonetka.api-token}")
     private String apiToken;
 
-    public void validateOrderPackage(OrderDTO orderDTO) {
+    public void validateOrderPackage(FurgonetkaPackageRequestDTO furgonetkaPackageRequestDTO) {
+        String body;
+        try {
+            body = new ObjectMapper().writeValueAsString(furgonetkaPackageRequestDTO);
+        } catch (Exception e) {
+            throw new FurgonetkaException("Nie udało się utworzyć przesyłki");
+        }
+
         String apiKey = provideApiKey();
-        if(StringUtils.isEmpty(apiKey)){
-            return;
+        if (StringUtils.isEmpty(apiKey)) {
+            throw new FurgonetkaException("Błąd podczas łączenia z serwisem dostaw");
         }
 
         String apiAccessToken = "Bearer " + apiKey;
@@ -46,9 +54,11 @@ public class FurgonetkaClient {
 
         try {
             Response response = new OkHttpClient().newCall(request).execute();
-            System.out.println("dupa");
-        }catch (Exception ignored){
-            return;
+            if (!response.isSuccessful() || !StringUtils.isEmpty(response.body().string())) {
+                throw new FurgonetkaException("Nie udało się utworzyć przesyłki");
+            }
+        } catch (Exception ignored) {
+            throw new FurgonetkaException("Nie udało się utworzyć przesyłki");
         }
     }
 

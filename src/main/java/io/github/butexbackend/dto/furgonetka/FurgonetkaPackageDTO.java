@@ -1,8 +1,8 @@
 package io.github.butexbackend.dto.furgonetka;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,8 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FurgonetkaTokenResponseDTO {
+@Builder
+public class FurgonetkaPackageDTO {
 
-    @JsonProperty("access_token")
-    private String accessToken;
+    private Integer width;
+    private Integer depth;
+    private Integer height;
+    private float weight;
+    private String description;
 }

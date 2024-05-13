@@ -1,9 +1,6 @@
 package io.github.butexbackend.dto;
 
-import io.github.butexbackend.entity.OrderProduct;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import io.github.butexbackend.model.FurgonetkaService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,4 +20,5 @@ public class OrderDTO {
     private String city;
     private String email;
     private String phoneNumber;
+    private FurgonetkaService service;
 }
