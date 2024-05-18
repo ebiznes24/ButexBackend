@@ -2,6 +2,7 @@ package io.github.butexbackend.service;
 
 import io.github.butexbackend.client.FurgonetkaClient;
 import io.github.butexbackend.dto.OrderDTO;
+import io.github.butexbackend.dto.OrderProductDTO;
 import io.github.butexbackend.dto.furgonetka.FurgonetkaPackageDTO;
 import io.github.butexbackend.dto.furgonetka.FurgonetkaPackagePickupDTO;
 import io.github.butexbackend.dto.furgonetka.FurgonetkaPackageReceiverDTO;
@@ -22,9 +23,19 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final FurgonetkaClient furgonetkaClient;
     private final OrderMapper orderMapper;
+    private final ProductService productService;
 
     public Order createOrder(OrderDTO orderDTO) {
         furgonetkaClient.validateOrderPackage(preparePackageRequestDTO(orderDTO));
+        Order order = orderMapper.orderDtoToOrder(orderDTO);
+
+        double finalPrice = 0.0;
+        for (OrderProductDTO orderProduct : orderDTO.getProducts()) {
+            double partialPrice = productService.getProduct(orderProduct.getProductId()).getPrice().doubleValue() * orderProduct.getQuantity();
+            finalPrice += partialPrice;
+        }
+
+        order.setFinalPrice(finalPrice);
         return orderRepository.save(orderMapper.orderDtoToOrder(orderDTO));
     }
 

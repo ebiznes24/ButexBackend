@@ -36,4 +36,5 @@ public class Order {
     private String email;
     private String phoneNumber;
     private FurgonetkaService service;
+    private Double finalPrice;
 }

@@ -14,7 +14,6 @@ furgonetka:
     package-validate: /packages/validate
     package-create: /packages
 
-#Uncomment fragment below if u want tables to be created
-#  jpa:
-#    hibernate:
-#      ddl-auto: create-drop
+server:
+  error:
+    include-message: always

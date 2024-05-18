@@ -27,8 +27,43 @@ public class FurgonetkaClient {
     @Value("${furgonetka.endpoint.package-validate}")
     private String packageValidateUrl;
 
+    @Value("${furgonetka.endpoint.package-create}")
+    private String packageCreate;
+
     @Value("${furgonetka.api-token}")
     private String apiToken;
+
+    public void createOrderPackage(FurgonetkaPackageRequestDTO furgonetkaPackageRequestDTO) {
+        String body;
+        try {
+            body = new ObjectMapper().writeValueAsString(furgonetkaPackageRequestDTO);
+        } catch (Exception e) {
+            throw new FurgonetkaException("Nie udało się utworzyć przesyłki");
+        }
+
+        String apiKey = provideApiKey();
+        if (StringUtils.isEmpty(apiKey)) {
+            throw new FurgonetkaException("Błąd podczas łączenia z serwisem dostaw");
+        }
+
+        String apiAccessToken = "Bearer " + apiKey;
+
+        RequestBody requestBody = RequestBody.create(body, JSON);
+        Request request = new Request.Builder()
+                .url(environmentUrl + packageCreate)
+                .addHeader("Authorization", apiAccessToken)
+                .post(requestBody)
+                .build();
+
+        try {
+            Response response = new OkHttpClient().newCall(request).execute();
+            if (!response.isSuccessful() || !StringUtils.isEmpty(response.body().string())) {
+                throw new FurgonetkaException("Nie udało się utworzyć przesyłki");
+            }
+        } catch (Exception ignored) {
+            throw new FurgonetkaException("Nie udało się utworzyć przesyłki");
+        }
+    }
 
     public void validateOrderPackage(FurgonetkaPackageRequestDTO furgonetkaPackageRequestDTO) {
         String body;
