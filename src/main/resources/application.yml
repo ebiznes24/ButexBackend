@@ -19,6 +19,7 @@ paynow:
   signature-token: df12d0d5-e701-4eb1-9ab8-797e238618a5
   endpoint:
     payment-create: /v1/payments
+    payment-status: /v1/payments/{paymentId}/status
 
 server:
   error:

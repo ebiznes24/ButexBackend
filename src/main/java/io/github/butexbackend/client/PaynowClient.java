@@ -3,20 +3,19 @@ package io.github.butexbackend.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.butexbackend.dto.paynow.PaynowRequestDTO;
 import io.github.butexbackend.dto.paynow.PaynowResponseDTO;
+import io.github.butexbackend.dto.paynow.PaynowStatusResponseDTO;
 import io.github.butexbackend.exception.FurgonetkaException;
-import io.micrometer.common.util.StringUtils;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.Random;
@@ -38,6 +37,29 @@ public class PaynowClient {
 
     @Value("${paynow.endpoint.payment-create}")
     private String paymentCreate;
+
+    @Value("${paynow.endpoint.payment-status}")
+    private String paymentStatus;
+
+    public PaynowStatusResponseDTO getPaymentStatus(String paymentId) {
+        String fixedPaymentStatus = StringUtils.replace(paymentStatus, "{paymentId}", paymentId);
+
+        Request request = new Request.Builder()
+                .url(environmentUrl + fixedPaymentStatus)
+                .addHeader("Api-Key", apiToken)
+                .build();
+
+        try {
+            Response response = new OkHttpClient().newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new FurgonetkaException("Nie udało się potwierdzić statusu płatności");
+            }
+
+            return new ObjectMapper().readValue(Objects.requireNonNull(response.body()).string(), PaynowStatusResponseDTO.class);
+        } catch (Exception ignored) {
+            throw new FurgonetkaException("Nie udało się potwierdzić statusu płatności");
+        }
+    }
 
     public PaynowResponseDTO createPayment(PaynowRequestDTO paynowRequestDTO) {
         String body;

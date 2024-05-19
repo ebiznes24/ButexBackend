@@ -4,22 +4,63 @@ import io.github.butexbackend.client.PaynowClient;
 import io.github.butexbackend.dto.paynow.PaynowBuyerDTO;
 import io.github.butexbackend.dto.paynow.PaynowRequestDTO;
 import io.github.butexbackend.dto.paynow.PaynowResponseDTO;
+import io.github.butexbackend.dto.paynow.PaynowStatusResponseDTO;
 import io.github.butexbackend.entity.Order;
+import io.github.butexbackend.entity.Payment;
+import io.github.butexbackend.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
 
+    private static final String CONFIRMED_STATUS = "CONFIRMED";
+
     private final OrderService orderService;
     private final PaynowClient paynowClient;
+    private final PaymentRepository paymentRepository;
 
     public PaynowResponseDTO createPayment(Long orderId) {
         Order order = orderService.getOrder(orderId);
         PaynowRequestDTO paynowRequestDTO = buildPaynowRequest(order);
 
-        return paynowClient.createPayment(paynowRequestDTO);
+        PaynowResponseDTO paynowResponseDTO = paynowClient.createPayment(paynowRequestDTO);
+        savePayment(preparePaymentEntity(orderId, paynowResponseDTO));
+        return paynowResponseDTO;
+    }
+
+    public void savePayment(Payment payment) {
+        paymentRepository.save(payment);
+    }
+
+    public void validatePaymentStatuses() {
+        List<Payment> notConifrmedPayments = paymentRepository.findAllByStatusIsNot(CONFIRMED_STATUS);
+
+        for (Payment notConifrmedPayment : notConifrmedPayments) {
+            PaynowStatusResponseDTO paymentStatus = paynowClient.getPaymentStatus(notConifrmedPayment.getPaymentId());
+
+            if (!paymentStatus.getStatus().equalsIgnoreCase(notConifrmedPayment.getStatus())) {
+                notConifrmedPayment.setStatus(paymentStatus.getStatus());
+                paymentRepository.save(notConifrmedPayment);
+
+                if (paymentStatus.getStatus().equalsIgnoreCase(CONFIRMED_STATUS)) {
+                    orderService.createOrder(notConifrmedPayment.getOrderId());
+                }
+            }
+        }
+    }
+
+    private Payment preparePaymentEntity(Long orderId, PaynowResponseDTO paynowResponseDTO) {
+        Payment payment = new Payment();
+        payment.setPaymentId(paynowResponseDTO.getPaymentId());
+        payment.setOrderId(orderId);
+        payment.setStatus(paynowResponseDTO.getStatus());
+        payment.setCreateDate(LocalDateTime.now());
+        return payment;
     }
 
     private static PaynowRequestDTO buildPaynowRequest(Order order) {
@@ -35,6 +76,4 @@ public class PaymentService {
                         .build())
                 .build();
     }
-
-
 }

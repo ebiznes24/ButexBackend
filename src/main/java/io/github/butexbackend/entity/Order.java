@@ -1,6 +1,6 @@
 package io.github.butexbackend.entity;
 
-import io.github.butexbackend.model.FurgonetkaService;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.mapstruct.ValueMapping;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "orders")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Order {
 
     @Id
@@ -35,6 +37,6 @@ public class Order {
     private String city;
     private String email;
     private String phoneNumber;
-    private FurgonetkaService service;
+    private String service;
     private Double finalPrice;
 }

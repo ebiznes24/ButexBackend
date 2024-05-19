@@ -10,6 +10,7 @@ import io.github.butexbackend.dto.furgonetka.FurgonetkaPackageRequestDTO;
 import io.github.butexbackend.entity.Order;
 import io.github.butexbackend.mapper.OrderMapper;
 import io.github.butexbackend.repository.OrderRepository;
+import io.github.butexbackend.util.ServiceUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class OrderService {
         return orderRepository.findById(id).orElse(null);
     }
 
-    public Order createOrder(OrderDTO orderDTO) {
+    public Order validateOrderAndSaveEntity(OrderDTO orderDTO) {
         furgonetkaClient.validateOrderPackage(preparePackageRequestDTO(orderDTO));
         Order order = orderMapper.orderDtoToOrder(orderDTO);
 
@@ -41,6 +42,17 @@ public class OrderService {
 
         order.setFinalPrice(finalPrice);
         return orderRepository.save(order);
+    }
+
+    public Order createOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            return null;
+        }
+
+        OrderDTO orderDTO = orderMapper.orderToOrderDto(order);
+        furgonetkaClient.createOrderPackage(preparePackageRequestDTO(orderDTO));
+        return order;
     }
 
     private FurgonetkaPackageRequestDTO preparePackageRequestDTO(OrderDTO orderDTO) {
@@ -82,7 +94,7 @@ public class OrderService {
         });
 
         return FurgonetkaPackageRequestDTO.builder()
-                .service_id(orderDTO.getService().id)
+                .service_id(ServiceUtil.getServiceId(orderDTO.getService()))
                 .pickup(packagePickupDTO)
                 .receiver(packageReceiverDTO)
                 .parcels(furgonetkaPackageDTOList)
