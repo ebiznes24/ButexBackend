@@ -25,6 +25,10 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final ProductService productService;
 
+    public Order getOrder(Long id) {
+        return orderRepository.findById(id).orElse(null);
+    }
+
     public Order createOrder(OrderDTO orderDTO) {
         furgonetkaClient.validateOrderPackage(preparePackageRequestDTO(orderDTO));
         Order order = orderMapper.orderDtoToOrder(orderDTO);
@@ -36,7 +40,7 @@ public class OrderService {
         }
 
         order.setFinalPrice(finalPrice);
-        return orderRepository.save(orderMapper.orderDtoToOrder(orderDTO));
+        return orderRepository.save(order);
     }
 
     private FurgonetkaPackageRequestDTO preparePackageRequestDTO(OrderDTO orderDTO) {
