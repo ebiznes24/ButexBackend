@@ -8,9 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Component
@@ -35,13 +37,22 @@ public class FakeDataInitializer {
             "Guma",
             "Eco-skóra");
 
+    private static final Map<ProductType, String> filenameByType = Map.of(
+            ProductType.TRAMPKI,"trampki.jpg",
+            ProductType.SPORTOWE,"sportowe.jpg",
+            ProductType.KOZAKI,"kozaki.jpg",
+            ProductType.SZPILKI,"szpilki.jpg",
+            ProductType.SANDAŁY,"sandals.jpg",
+            ProductType.TRAPERY,"trapery.jpg"
+    );
+
     private final ProductRepository productRepository;
 
     @Bean
     void initializeFakeData() {
         List<Product> products = new ArrayList<>();
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 15; i++) {
             products.add(Product.builder()
                     .productType(getRandomProductType())
                     .name(getRandomName())
@@ -53,6 +64,7 @@ public class FakeDataInitializer {
                     .build());
         }
 
+        products.forEach(product -> product.setImage(getImageForType(product.getProductType())));
         productRepository.saveAll(products);
     }
 
@@ -60,6 +72,20 @@ public class FakeDataInitializer {
         Random random = new Random();
         ProductType[] values = ProductType.values();
         return values[random.nextInt(values.length)];
+    }
+
+    private byte[] getImageForType(ProductType productType) {
+        try {
+            InputStream is = getClass().getResourceAsStream("/images/" + filenameByType.get(productType));
+
+            if (is == null) {
+                return null;
+            }
+
+            return is.readAllBytes();
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     private String getRandomName() {

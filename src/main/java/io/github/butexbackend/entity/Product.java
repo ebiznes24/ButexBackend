@@ -38,4 +38,5 @@ public class Product {
     @ElementCollection(targetClass = ProductColor.class)
     private List<ProductColor> colors;
     private String fabric;
+    private byte[] image;
 }

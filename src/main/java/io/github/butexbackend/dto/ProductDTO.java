@@ -22,4 +22,5 @@ public class ProductDTO {
     private List<Double> sizes;
     private List<ProductColor> colors;
     private String fabric;
+    private byte[] image;
 }

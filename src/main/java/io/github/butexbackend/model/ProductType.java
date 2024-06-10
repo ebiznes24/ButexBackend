@@ -6,10 +6,6 @@ public enum ProductType {
     SPORTOWE,
     KOZAKI,
     SZPILKI,
-    MOKASYNY,
     SANDAŁY,
-    ESPADRYLE,
-    TRAPERY,
-    BALERINY,
-    BROGS;
+    TRAPERY
 }
